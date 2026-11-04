@@ -1,0 +1,40 @@
+name: Build Podman image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - podman/**
+      - .github/workflows/build-podman.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Polaris is x86_64; pin the platform so the image matches regardless of runner
+      - name: Build image
+        run: |
+          podman build --platform linux/amd64 -t polaris-podman-example \
+            -f podman/Containerfile podman
+
+      - name: Smoke test
+        run: |
+          podman run --rm polaris-podman-example cat /opt/container-marker.txt
+          podman run --rm polaris-podman-example \
+            python3 -c "import globus_compute_sdk, globus_compute_endpoint, globus_sdk"
+
+      - name: Push to GHCR
+        run: |
+          # GHCR requires lowercase image names
+          image="ghcr.io/${GITHUB_REPOSITORY,,}/polaris-podman-example"
+          echo "${{ secrets.GITHUB_TOKEN }}" | podman login \
+            --username "${{ github.actor }}" --password-stdin ghcr.io
+          podman push polaris-podman-example "docker://${image}:latest"
+          podman push polaris-podman-example "docker://${image}:${GITHUB_SHA::7}"

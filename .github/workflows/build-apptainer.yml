@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - polaris-apptainer-example.def
-      - .github/workflows/build-sif.yml
+      - apptainer/**
+      - .github/workflows/build-apptainer.yml
   workflow_dispatch:
 
 permissions:
@@ -23,7 +23,7 @@ jobs:
           apptainer-version: 1.3.6
 
       - name: Build SIF
-        run: apptainer build polaris-apptainer-example.sif polaris-apptainer-example.def
+        run: apptainer build polaris-apptainer-example.sif apptainer/polaris-apptainer-example.def
 
       - name: Smoke test
         run: |

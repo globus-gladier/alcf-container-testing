@@ -4,4 +4,7 @@ FROM python:3.12-slim
 # inside the container; it also pulls in globus-compute-sdk.
 RUN pip install --no-cache-dir globus-compute-endpoint globus-compute-sdk globus-sdk
 
+# Marker file so a task can confirm it is running inside this container
+RUN echo "polaris-podman-example" > /opt/container-marker.txt
+
 CMD ["python3"]
