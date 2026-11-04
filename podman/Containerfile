@@ -1,0 +1,7 @@
+FROM python:3.12-slim
+
+# globus-compute-endpoint provides the worker process the endpoint launches
+# inside the container; it also pulls in globus-compute-sdk.
+RUN pip install --no-cache-dir globus-compute-endpoint globus-compute-sdk globus-sdk
+
+CMD ["python3"]

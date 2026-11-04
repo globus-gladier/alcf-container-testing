@@ -1,0 +1,11 @@
+Bootstrap: docker
+From: python:3.12-slim
+
+%post
+    pip install --no-cache-dir globus-compute-endpoint globus-compute-sdk globus-sdk
+
+    # Marker file so a task can confirm it is running inside this container
+    echo "polaris-apptainer-example" > /opt/container-marker.txt
+
+%runscript
+    exec python3 "$@"
